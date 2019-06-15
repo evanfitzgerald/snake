@@ -21,11 +21,11 @@ clock = pygame.time.Clock()
 speed = 20
 
 highscore = 0
-delta = 10
+delta = 20
 score = 0
-snakePos = [100, 250]
-snakeBody = [[100, 250], [90, 250], [80, 250]]
-foodPos = [random.randrange(1, width // 10) * delta, random.randrange(1, height // 10) * delta]
+snakePos = [80, 240]
+snakeBody = [[80, 240], [60, 240], [40, 240]]
+foodPos = [random.randrange(1, width // delta) * delta, random.randrange(1, height // delta) * delta]
 foodSpawn = True
 direction = ''
 changeto = ''
@@ -46,9 +46,9 @@ def gameOver():
 def start():
     global score, snakePos, snakeBody, foodPos, foodSpawn, direction, changeto
     score = 0
-    snakePos = [100, 250]
-    snakeBody = [[100, 250], [90, 250], [80, 250]]
-    foodPos = [random.randrange(1, width // 10) * delta, random.randrange(1, height // 10) * delta]
+    snakePos = [80, 240]
+    snakeBody = [[80, 240], [60, 240], [40, 240]]
+    foodPos = [random.randrange(1, width // delta) * delta, random.randrange(1, height // delta) * delta]
     foodSpawn = True
     direction = 'r'
     changeto = ''
@@ -186,15 +186,13 @@ while True:
     if foodSpawn == False:
         while foodSpawn is False:
             x = False
-            foodPos = [random.randrange(1, width // 10) * delta, random.randrange(1, height // 10) * delta]
+            foodPos = [random.randrange(1, width // delta) * delta, random.randrange(1, height // delta) * delta]
             for block in snakeBody[1:]:
                 if foodPos == block:
                     x = True
             if x == False:
                 foodSpawn = True
-
-
-                
+       
     check()
     draw()
     pygame.display.update()
