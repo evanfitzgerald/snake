@@ -73,7 +73,8 @@ def draw():
     #display.fill(black)
     for pos in snakeBody:
         pygame.draw.rect(display, green, pygame.Rect(pos[0], pos[1], delta, delta))
-    pygame.draw.rect(display, white, pygame.Rect(snakePos[0], snakePos[1], delta, delta))
+    #pygame.draw.rect(display, white, pygame.Rect(snakePos[0], snakePos[1], delta, delta))
+    #pygame.draw.rect(display, background, pygame.Rect(snakeBody[-1][0], snakeBody[-1][1], delta, delta))
     pygame.draw.rect(display, red, pygame.Rect(foodPos[0], foodPos[1], delta, delta))
     showScore()
 
@@ -99,7 +100,7 @@ def create():
     global snakeBody, foodPos, spaces, listy
     listy = []
     for x in spaces:
-        check1 = check2 = check3 = check4 = False
+        check1 = check2 = check3 = check4 = check5 = check6 = check7 = check8 = False
         for block in snakeBody:
             if x[0] > block[0] and x[1] == block[1]: 
                 check1 = True
@@ -109,6 +110,15 @@ def create():
                 check3 = True
             if x[0] == block[0] and x[1] > block[1]: 
                 check4 = True
+            if x[0] < 0:
+                check5 = True
+            if x[0] > 560:
+                check6 = True
+            if x[1] < 0:
+                check7 = True
+            if x[1] > 360:
+                check8 = True
+
         if check1 == check2 == check3 == check4 == True and x != (snakeBody or foodPos):
             listy.append([x[0],x[1]])
 
@@ -118,16 +128,65 @@ def create():
 
     # displays dangerous spaces on board
     display.fill(black)
+    '''
     for x in listy:
         if x != snakeBody or snakePos or foodPos:
             pygame.draw.rect(display, yellow, pygame.Rect(x[0], x[1], delta, delta))
-    
+    '''
 # make list containing any cautioned areas
 def warning():
     global caution
     caution = []
     caution.extend(listy)
     caution.extend(snakeBody)
+
+def moving_validation():
+    global direction, changeto, snakePos, foodPos, foodSpawn, score
+    print(33)
+    print(changeto)
+    # checking snake is not moving in opposite direction
+    if changeto == 'r' and direction != 'l':
+        direction = 'r'
+    if changeto == 'l' and direction != 'r':
+        direction = 'l'
+    if changeto == 'u' and direction != 'd':
+        direction = 'u'
+    if changeto == 'd' and direction != 'u':
+        direction = 'd'
+
+    # updating position of snake
+    if direction == 'r':
+        snakePos[0] += delta
+    if direction == 'l':
+        snakePos[0] -= delta
+    if direction == 'd':
+        snakePos[1] += delta
+    if direction == 'u':
+        snakePos[1] -= delta
+    
+    # snake spawning
+    snakeBody.insert(0, list(snakePos))
+    if snakePos == foodPos:
+        foodSpawn = False
+        score += 1
+    else:
+        snakeBody.pop()
+
+    # food spawning
+    if foodSpawn == False:
+        while foodSpawn is False:
+            x = False
+            foodPos = [random.randrange(1, width // delta) * delta, random.randrange(1, height // delta) * delta]
+            for block in snakeBody:
+                if foodPos == block:
+                    x = True
+            if x == False:
+                foodSpawn = True
+              
+    check()
+    draw()
+    pygame.display.update()
+    clock.tick(speed)
 
 # pause (spacebar)
 def pause():
@@ -371,36 +430,92 @@ def move():
                         changeto = 'u' 
     
     if snakePos[0] == 0 and changeto == 'l':
-        changeto = 'u'
-        for block in caution:
-            if snakePos[1] - delta == block[1] and snakePos[0] == block[0]:
-                changeto = 'r'
-            if snakePos[0] + delta == block[0] and snakePos[1] == block[1]:
-                changeto = 'd'
+        if direction == 'l':
+            # up or down
+            changeto = 'u'
+            for block in caution:
+                if snakePos[1] - delta == block[1] and snakePos[0] == block[0]:
+                    changeto = 'd'
+            
+        if direction == 'u':
+            # up or right
+            changeto = 'u'
+            for block in caution:
+                if snakePos[1] - delta == block[1] and snakePos[0] == block[0]:
+                    changeto = 'r'
+
+        if direction == 'd':
+            # down or right
+            changeto = 'd'
+            for block in caution:
+                if snakePos[1] + delta == block[1] and snakePos[0] == block[0]:
+                    changeto = 'r'
 
     if snakePos[0] == 560 and changeto == 'r':
-        changeto = 'u'
-        for block in caution:
-            if snakePos[1] - delta == block[1] and snakePos[0] == block[0]:
-                changeto = 'l'
-            if snakePos[0] - delta == block[0] and snakePos[1] == block[1]:
-                changeto = 'd'
+        if direction == 'r':
+            # up or down 
+            changeto = 'u'
+            for block in caution:
+                if snakePos[1] - delta == block[1] and snakePos[0] == block[0]:
+                    changeto = 'd'
+
+        if direction == 'u':
+            # up or left
+            changeto = 'u'
+            for block in caution:
+                if snakePos[1] - delta == block[1] and snakePos[0] == block[0]:
+                    changeto = 'l'
+            
+        if direction == 'd':
+            # down or left
+            changeto = 'd'
+            for block in caution:
+                if snakePos[1] + delta == block[1] and snakePos[0] == block[0]:
+                    changeto = 'l'
 
     if snakePos[1] == 0 and changeto == 'u':
-        changeto = 'r'
-        for block in caution:
-            if snakePos[1] + delta == block[1] and snakePos[0] == block[0]:
-                changeto = 'l'
+        if direction == 'u':
+            # left or right 
+            changeto = 'r' 
+            for block in caution:
+                if snakePos[0] + delta == block[0] and snakePos[1] == block[1]:
+                    changeto = 'l'
+
+        if direction == 'l':
+            # left or down
+            changeto = 'l'
+            for block in caution:
                 if snakePos[0] - delta == block[0] and snakePos[1] == block[1]:
                     changeto = 'd'
 
+        if direction == 'r':
+            # right or down
+            changeto = 'r'
+            for block in caution:
+                if snakePos[0] + delta == block[0] and snakePos[1] == block[1]:
+                    changeto = 'd'
+
     if snakePos[1] == 360 and changeto == 'd':
-        changeto = 'r'
-        for block in caution:
-            if snakePos[0] + delta == block[0] and snakePos[1] == block[1]:
-                changeto = 'u'
-            if snakePos[1] + delta == block[1] and snakePos[0] == block[0]:
-                changeto = 'l'
+        if direction == 'd':
+            # left or right
+            changeto = 'r'
+            for block in caution:
+                if snakePos[0] + delta == block[0] and snakePos[1] == block[1]:
+                    changeto = 'l'
+
+        if direction == 'l':
+            # left or up 
+            changeto = 'l'
+            for block in caution:
+                if snakePos[1] - delta == block[1] and snakePos[0] == block[0]:
+                    changeto = 'u'
+
+        if direction == 'r':
+            # right or up 
+            changeto = 'r'
+            for block in caution:
+                if snakePos[0] + delta == block[0] and snakePos[1] == block[1]:
+                    changeto = 'u'
 
 menu()
 while True:
@@ -414,47 +529,4 @@ while True:
                 pause()
 
     move()
-
-    # checking snake is not moving in opposite direction
-    if changeto == 'r' and direction != 'l':
-        direction = 'r'
-    if changeto == 'l' and direction != 'r':
-        direction = 'l'
-    if changeto == 'u' and direction != 'd':
-        direction = 'u'
-    if changeto == 'd' and direction != 'u':
-        direction = 'd'
-
-    # updating position of snake
-    if direction == 'r':
-        snakePos[0] += delta
-    if direction == 'l':
-        snakePos[0] -= delta
-    if direction == 'd':
-        snakePos[1] += delta
-    if direction == 'u':
-        snakePos[1] -= delta
-
-    # snake spawning
-    snakeBody.insert(0, list(snakePos))
-    if snakePos == foodPos:
-        foodSpawn = False
-        score += 1
-    else:
-        snakeBody.pop()
-
-    # food spawning
-    if foodSpawn == False:
-        while foodSpawn is False:
-            x = False
-            foodPos = [random.randrange(1, width // delta) * delta, random.randrange(1, height // delta) * delta]
-            for block in snakeBody:
-                if foodPos == block:
-                    x = True
-            if x == False:
-                foodSpawn = True
-              
-    check()
-    draw()
-    pygame.display.update()
-    clock.tick(speed)
+    moving_validation()
