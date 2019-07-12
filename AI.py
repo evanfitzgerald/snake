@@ -8,6 +8,9 @@ width = 600
 display = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake")
 
+# change this to True to visualize the bad pathways
+visualize = False
+
 black = pygame.Color(0, 0, 0)
 white = pygame.Color(255, 255, 255)
 red = pygame.Color(240, 10, 10)
@@ -16,7 +19,6 @@ yellow = pygame.Color(255, 255, 0)
 background = pygame.Color(36, 158, 93)
 button = pygame.Color(1, 175, 170)
 button2 = pygame.Color(1, 160, 180)
-
 clock = pygame.time.Clock()
 listy = spaces = caution = []
 highscore = score = 0
@@ -73,8 +75,6 @@ def draw():
     #display.fill(black)
     for pos in snakeBody:
         pygame.draw.rect(display, green, pygame.Rect(pos[0], pos[1], delta, delta))
-    #pygame.draw.rect(display, white, pygame.Rect(snakePos[0], snakePos[1], delta, delta))
-    #pygame.draw.rect(display, background, pygame.Rect(snakeBody[-1][0], snakeBody[-1][1], delta, delta))
     pygame.draw.rect(display, red, pygame.Rect(foodPos[0], foodPos[1], delta, delta))
     showScore()
 
@@ -97,7 +97,7 @@ def board():
     
 # creates list of dangerous spaces
 def create():
-    global snakeBody, foodPos, spaces, listy
+    global snakeBody, foodPos, spaces, listy, visualize
     listy = []
     for x in spaces:
         check1 = check2 = check3 = check4 = check5 = check6 = check7 = check8 = False
@@ -128,11 +128,12 @@ def create():
 
     # displays dangerous spaces on board
     display.fill(black)
-    '''
-    for x in listy:
-        if x != snakeBody or snakePos or foodPos:
-            pygame.draw.rect(display, yellow, pygame.Rect(x[0], x[1], delta, delta))
-    '''
+
+    if visualize == True:
+        for x in listy:
+            if x != snakeBody or snakePos or foodPos:
+                pygame.draw.rect(display, yellow, pygame.Rect(x[0], x[1], delta, delta))
+    
 # make list containing any cautioned areas
 def warning():
     global caution
@@ -142,8 +143,6 @@ def warning():
 
 def moving_validation():
     global direction, changeto, snakePos, foodPos, foodSpawn, score
-    print(33)
-    print(changeto)
     # checking snake is not moving in opposite direction
     if changeto == 'r' and direction != 'l':
         direction = 'r'
