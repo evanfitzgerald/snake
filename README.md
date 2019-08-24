@@ -23,17 +23,22 @@ python3 rule-based-AI.py
 ```
 
 ## Usage
+In the manual version you can control the snake by either using the arrow keys or WASD, you can also pause/start the game by clicking on the space bar (this also applies to the AI version). 
 
-Both versions are fully playable. The rule based AI version is currently still very basic, the snake is able to get to the food by avoiding itself and some the bad pathways it is faced with. At its current state the rule based AI operates similarly to as in the demo below.
+The rule based AI operates similarly to as in the demo below.
 
 <p align = "center">
 <img src = "images/snake-AI.gif" width=594 height=400 alt="" </p>
   
+
+  
  ### Other Features
- To visualize the snake's bad pathways set the __visualize__ variable to True in rule-based-AI.py. The yellow spots that appear will represent where the snake should avoid.
+ To visualize the snake's bad pathways set the __visualize__ variable to True in rule-based-AI.py. The yellow spots that appear will represent where the snake should avoid, note the visualized example below.
  ```
  visualize = True
  ```
+<p align = "center">
+<img src = "images/snake-visualized-AI.gif" width=594 height=400 alt="" </p>
  
 ## Liscense
 
